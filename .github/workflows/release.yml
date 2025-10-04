@@ -1,0 +1,38 @@
+name: Release Tag
+
+on:
+  workflow_call:
+    outputs:
+      version_tag:
+        description: "The semantic version tag that was created"
+        value: ${{ jobs.create-tag.outputs.version_tag }}
+
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  SERVICE_ACTOR: svc-vitorihealth
+  SERVICE_EMAIL: service@vitorihealth.com
+
+jobs:
+  create-tag:
+    runs-on: self-hosted
+    outputs:
+      version_tag: ${{ steps.release.outputs.version_tag }}
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create Release Tag
+        id: release
+        run: |
+          chmod +x ./.github/scripts/release.sh
+          # this outputs the version_tag variable
+          ./.github/scripts/release.sh "${{ env.GH_TOKEN }}" "${{ github.repository }}" "${{ env.SERVICE_ACTOR }}" "${{ env.SERVICE_EMAIL }}"
+
+      - name: Push changes
+        run: |
+          git push origin --follow-tags --force-with-lease

@@ -1,30 +1,65 @@
-name: ci
+name: "Iconify API: Build, Tag, and Publish"
 
 on:
-    push:
-        branches:
-            - main
-            - next
-    pull_request:
-        branches:
-            - main
-            - next
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  # GCP Artifact Registry Destination
+  GCP_PROJECT_ID: flume-main
+  GAR_LOCATION: us-central1
+  GAR_REPOSITORY: engineering-tools-docker
+  IMAGE_NAME: iconify-api
 
 jobs:
-    ci:
-        runs-on: ubuntu-latest
+  # 1. Calculate the Semantic Version and Create Git Tag
+  versioning:
+    runs-on: self-hosted
+    outputs:
+      # Export the calculated version tag to the next job
+      version_tag: ${{ steps.semver.outputs.version_tag }}
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          # Required to fetch all history and tags for version calculation
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-        steps:
-            - uses: actions/checkout@v4
-            - uses: actions/setup-node@v4
-              with:
-                  node-version: 'latest'
+      - name: Calculate Semantic Version and Tag
+        id: semver
+        shell: bash
+        run: | # create tag and set it in 'version_tag' output
+          chmod +x ./.github/scripts/release.sh
+          ./.github/scripts/release.sh \
+            "${{ secrets.GITHUB_TOKEN }}" \
+            "${{ github.repository }}" \
+            "${{ github.actor }}" \
+            "${{ github.actor }}@users.noreply.github.com"
 
-            - name: 📦 Install dependencies
-              run: npm ci
+      - name: Push new version tag to GitHub
+        if: success() && steps.semver.outputs.version_tag != '' 
+        run: git push origin ${{ steps.semver.outputs.version_tag }}
 
-            - name: 🚧 Build project
-              run: npm run build
-
-            - name: 🧪 Test project
-              run: npm run test
+  # 2. Build and Publish the Image to GAR
+  build_and_publish:
+    needs: versioning
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build and Publish Iconify API Container
+        uses: ./.github/workflows/build-publish # Path to your composite action
+        with:
+          project-id: ${{ env.GCP_PROJECT_ID }}
+          gar-location: ${{ env.GAR_LOCATION }}
+          repository: ${{ env.GAR_REPOSITORY }}
+          image: ${{ env.IMAGE_NAME }}
+          tag: ${{ needs.versioning.outputs.version_tag }}
+          # The Dockerfile is located in the root, so the defaults are fine
+          # dockerfile: ./Dockerfile
+          # directory: .
+          environment: production

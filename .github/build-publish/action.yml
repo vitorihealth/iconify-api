@@ -1,0 +1,58 @@
+name: Build and Publish Iconify API Container Image
+description: Build and publish a container image to Google Artifact Registry
+
+inputs:
+  project-id:
+    required: true
+    type: string
+  gar-location:
+    required: false
+    type: string
+    default: us
+  repository:
+    required: false
+    type: string
+    default: flume
+  image:
+    required: true
+    type: string
+  tag:
+    required: true
+    type: string
+  dockerfile:
+    required: false
+    type: string
+    default: ./Dockerfile
+  directory:
+    required: false
+    type: string
+    default: .
+  arguments:
+    required: false
+    type: string
+    default: ''
+  environment:
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - id: 'auth'
+      name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v2'
+      with:
+        workload_identity_provider: 'projects/997168045740/locations/global/workloadIdentityPools/gh-oidc/providers/gh-provider'
+        service_account: 'production-github-actions-sa@flume-main.iam.gserviceaccount.com'
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+
+    - name: Build and Publish Docker Image
+      shell: bash
+      run: |-
+        chmod +x ./.github/scripts/build-docker-image.sh
+        ./.github/scripts/build-docker-image.sh "${{ inputs.gar-location }}" "${{ inputs.project-id }}" "${{ inputs.repository }}" "${{ inputs.image }}" "${{ inputs.tag }}" "${{ inputs.dockerfile }}" "${{ inputs.directory }}" "${{ inputs.arguments }}" "${{ inputs.environment }}"
