@@ -5,8 +5,8 @@
 #./docker.sh arm64v8
 
 # To test the docker image a command like this can be used:
-#docker run --rm -p 3123:3000 --name iconify-api -v $(realpath "../iconify-cache"):/data/iconify-api/cache -v $(realpath "../iconify-config"):/data/iconify-api/src/config iconify/api:latest
-#docker run --rm -p 3123:3000 --name iconify-api -v /absolute/path/iconify-cache:/data/iconify-api/cache -v /absolute/path/iconify-config:/data/iconify-api/src/config iconify/api:latest
+#docker run --rm -p 3123:3010 --name iconify-api -v $(realpath "../iconify-cache"):/data/iconify-api/cache -v $(realpath "../iconify-config"):/data/iconify-api/src/config iconify/api:latest
+#docker run --rm -p 3123:3010 --name iconify-api -v /absolute/path/iconify-cache:/data/iconify-api/cache -v /absolute/path/iconify-config:/data/iconify-api/src/config iconify/api:latest
 DOCKER_REPO=iconify/api
 ICONIFY_API_REPO=$(realpath "./")
 BUILD_SOURCE=$(realpath "./")

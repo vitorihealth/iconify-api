@@ -18,12 +18,12 @@ To build a Docker image, run `./docker.sh`.
 
 If you want to customise config, fork this repo, customise source code, then build Docker image and deploy API.
 
-To run a Docker image, run `docker run -d -p 3000:3000 iconify/api` (change first 3000 to port you want to run API on).
+To run a Docker image, run `docker run -d -p 3010:3010 iconify/api` (change first 3010 to port you want to run API on).
 
 NPM commands for working with Docker images:
 
 -   `npm run docker:build` - builds Docker image.
--   `npm run docker:start` - starts Docker container on port 3000.
+-   `npm run docker:start` - starts Docker container on port 3010.
 -   `npm run docker:stop` - stops all Iconify API Docker containers.
 -   `npm run docker:cleanup` - removes all unused Iconify API Docker containers.
 
@@ -48,7 +48,7 @@ By default, server will:
 
 -   Automatically load latest icons from [`@iconify/json`](https://github.com/iconify/icon-sets).
 -   Load custom icon sets from `icons` directory.
--   Serve data on port 3000.
+-   Serve data on port 3010.
 
 You can customise API to:
 
@@ -62,7 +62,7 @@ It is recommended that you do not run API on port 80. Server can handle pretty m
 
 Run API on obscure port, hidden from outside world with firewall rules, use nginx as reverse proxy.
 
-HTTPS is not supported. It is a very resource intensive process, better handled by a dedicated solution such as nginx. Use nginx to run as HTTP and HTTPS server, forward queries to API HTTP server on hidden port such as default port 3000.
+HTTPS is not supported. It is a very resource intensive process, better handled by a dedicated solution such as nginx. Use nginx to run as HTTP and HTTPS server, forward queries to API HTTP server on hidden port such as default port 3010.
 
 ## Configuration
 
@@ -77,7 +77,7 @@ There are several ways to change configuration:
 Options that can be changed with environment variables and their default values (you can find all of them in `src/config/app.ts`):
 
 -   `HOST=0.0.0.0`: IP address or hostname HTTP server listens on.
--   `PORT=3000`: port HTTP server listens on.
+-   `PORT=3010`: port HTTP server listens on.
 -   `ICONIFY_SOURCE=full`: source for Iconify icon sets. Set to `full` to use `@iconify/json` package, `split` to use `@iconify-json/*` packages, `none` to use only custom icon sets.
 -   `REDIRECT_INDEX=https://iconify.design/`: redirect for `/` route. API does not serve any pages, so index page redirects to main website.
 -   `STATUS_REGION=`: custom text to add to `/version` route response. Iconify API is ran on network of servers, visitor is routed to closest server. It is used to tell which server user is connected to.
