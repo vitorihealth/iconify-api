@@ -2,7 +2,10 @@ version: '3.8'
 
 services:
   iconify-api:
-    image: ${ICONIFY_IMAGE_PATH:-iconify/api:latest}
+    # Image from GCP Artifact Registry
+    # ICONIFY_IMAGE_PATH in .env file or use default
+    # Format: <region>-docker.pkg.dev/<project-id>/<repository>/<image>:<tag>
+    image: ${ICONIFY_IMAGE_PATH:-us-central1-docker.pkg.dev/flume-main/engineering-tools-docker/iconify-api:latest}
     container_name: iconify-api
     # The API listens on 3010 internally, but we don't expose it to the host machine.
     # It's only accessible to other containers on the default 'bridge' network.
