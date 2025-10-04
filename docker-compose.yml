@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  iconify-api:
+    image: <your-artifact-registry-path>/iconify-api:latest # e.g., us-central1-docker.pkg.dev/project-id/repo/iconify-api:latest
+    container_name: iconify-api
+    # The API listens on 3010 internally, but we don't expose it to the host machine.
+    # It's only accessible to other containers on the default 'bridge' network.
+    expose:
+      - "3010"
+
+    environment:
+      - PORT=3010
+      - ENABLE_SEARCH_ENGINE=true
+
+  nginx:
+    image: nginx:stable-alpine
+    container_name: nginx-iconify-reverse-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certbot/conf:/etc/nginx/ssl:ro
+      - ./certbot/www:/var/www/certbot:ro # certbot challenge file
+    depends_on:
+      - iconify-api
+    restart: always
+
+  certbot:
+    image: certbot/certbot
+    container_name: iconify-certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/logs:/var/log/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    # This command registers for the certificate and runs every 12 hours to renew
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $!; done;'"
