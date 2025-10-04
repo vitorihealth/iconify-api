@@ -11,9 +11,9 @@ FROM ${ARCH}/node:${NODE_VERSION}-${OS} AS base
 ENV NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt
 
 # This handles using special APT sources during build only (it is safe to comment these 3 following lines out):
-RUN cp /etc/apt/sources.list /etc/apt/sources.list.original
-COPY tmp/sources.list /tmp/sources.list.tmp
-RUN ([ -s /tmp/sources.list.tmp ] && mv -f /tmp/sources.list.tmp /etc/apt/sources.list && cat /etc/apt/sources.list) || (cat /etc/apt/sources.list)
+# RUN cp /etc/apt/sources.list /etc/apt/sources.list.original
+# COPY tmp/sources.list /tmp/sources.list.tmp
+# RUN ([ -s /tmp/sources.list.tmp ] && mv -f /tmp/sources.list.tmp /etc/apt/sources.list && cat /etc/apt/sources.list) || (cat /etc/apt/sources.list)
 
 # Add temporary CERTs needed during build (it is safe to comment the following 1 line out):
 # COPY tmp/build-ca-cert.crt /usr/local/share/ca-certificates/build-ca-cert.crt
