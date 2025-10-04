@@ -52,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build and Publish Iconify API Container
-        uses: ./.github/workflows/build-publish # Path to your composite action
+        uses: ./.github/workflows/build-publish/action.yml # Path to your composite action
         with:
           project-id: ${{ env.GCP_PROJECT_ID }}
           gar-location: ${{ env.GAR_LOCATION }}
