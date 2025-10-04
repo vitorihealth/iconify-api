@@ -16,7 +16,7 @@ env:
 jobs:
   # 1. Calculate the Semantic Version and Create Git Tag
   versioning:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     outputs:
       # Export the calculated version tag to the next job
       version_tag: ${{ steps.semver.outputs.version_tag }}
