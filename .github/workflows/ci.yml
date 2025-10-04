@@ -43,7 +43,7 @@ jobs:
             "${{ github.actor }}@users.noreply.github.com"
 
       - name: Push new version tag to GitHub
-        if: success() && steps.semver.outputs.version_tag != '' 
+        if: success() && steps.semver.outputs.version_tag != ''
         run: git push origin ${{ steps.semver.outputs.version_tag }}
 
   # 2. Build and Publish the Image to GAR
@@ -51,8 +51,11 @@ jobs:
     needs: versioning
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
       - name: Build and Publish Iconify API Container
-        uses: ./.github/workflows/build-publish/action.yml # Path to your composite action
+        uses: ./.github/workflows/build-publish # Path to your composite action
         with:
           project-id: ${{ env.GCP_PROJECT_ID }}
           gar-location: ${{ env.GAR_LOCATION }}
