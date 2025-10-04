@@ -54,7 +54,7 @@ COPY ${SRC_PATH}icons/ /data/iconify-api/icons/
 RUN npm run build
 
 #### Stage RELEASE #####################################################################################################
-FROM iconify-api-install AS RELEASE
+FROM iconify-api-install AS release
 ARG BUILD_DATE
 ARG BUILD_VERSION
 ARG BUILD_REF
